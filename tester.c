@@ -22,5 +22,6 @@ int main() {
         return 1;
     }
     printf("Message read: %s\n", buf);
+    close(dev);
 
 }
