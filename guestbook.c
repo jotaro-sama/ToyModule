@@ -28,16 +28,16 @@ static size_t current_messages;
 static char** messages;
 
 static int __init guestbook_init(void) {
+    current_messages = 0;
+    messages = (char**) kmalloc(sizeof(char*)*MAX_MESSAGES, GFP_KERNEL);
+
     major = register_chrdev(0, DEVICE_NAME, &fops);
 
     if(major < 0) {
         printk(KERN_ALERT "Guestbook loading unsuccessful.\n");
         return major;    
-    }
+    }    
 
-    current_messages = 0;
-    messages = (char**) kmalloc(sizeof(char*)*MAX_MESSAGES, GFP_KERNEL);
-    
     printk(KERN_INFO "Guestbook module successfully loaded. Major number: %d\n", major);
     return 0;
 }
