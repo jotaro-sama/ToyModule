@@ -6,6 +6,7 @@
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/moduleparam.h>
+#include <linux/device.h>
 
 #define DEVICE_NAME "guestbook"
 #define MESS_SIZE  1024
@@ -30,6 +31,9 @@ static int major;
 static size_t current_messages;
 static char** messages;
 
+struct class *dev_class;
+struct device *dev;
+
 static int __init guestbook_init(void) {
     current_messages = 0;
     messages = (char**) kmalloc(sizeof(char*)*MAX_MESSAGES, GFP_KERNEL);
@@ -41,11 +45,21 @@ static int __init guestbook_init(void) {
         return major;    
     }    
 
+    dev_class = class_create(THIS_MODULE, "guestbook_class");
+    dev = device_create(dev_class, NULL, MKDEV(major, 0), NULL, DEVICE_NAME);
+    if (IS_ERR(dev)) {
+        class_destroy(dev_class);
+        unregister_chrdev(major, DEVICE_NAME);
+        printk(KERN_ALERT "Guestbook device creation for hotel \"%s\" unsuccessful.\n", hotel_name);
+    }
+
     printk(KERN_INFO "Guestbook module for hotel \"%s\" successfully loaded. Major number: %d\n", hotel_name, major);
     return 0;
 }
 
 static void __exit guestbook_exit(void) {
+    device_destroy(dev_class, dev->devt);
+    class_destroy(dev_class);
     unregister_chrdev(major, DEVICE_NAME);
 
     size_t i;

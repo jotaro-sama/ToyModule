@@ -1,5 +1,5 @@
 # Simple helper script. For now, just tail -f /var/log/kern.log on one terminal
-# and run this on another one if the device has already been created.
+# and run this on another one.
 
 make
 gcc -o tester tester.c
