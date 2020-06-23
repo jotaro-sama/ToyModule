@@ -5,11 +5,14 @@
 #include <linux/uaccess.h>
 #include <linux/string.h>
 #include <linux/slab.h>
+#include <linux/moduleparam.h>
 
 #define DEVICE_NAME "guestbook"
 #define MESS_SIZE  1024
 #define MAX_MESSAGES 512
 
+static char *hotel_name = "La Volpe";
+module_param(hotel_name, charp, S_IRUGO);
 
 static int dev_open(struct inode*, struct file*);
 static int dev_release(struct inode*, struct file*);
@@ -34,11 +37,11 @@ static int __init guestbook_init(void) {
     major = register_chrdev(0, DEVICE_NAME, &fops);
 
     if(major < 0) {
-        printk(KERN_ALERT "Guestbook loading unsuccessful.\n");
+        printk(KERN_ALERT "Guestbook loading for hotel \"%s\" unsuccessful.\n", hotel_name);
         return major;    
     }    
 
-    printk(KERN_INFO "Guestbook module successfully loaded. Major number: %d\n", major);
+    printk(KERN_INFO "Guestbook module for hotel \"%s\" successfully loaded. Major number: %d\n", hotel_name, major);
     return 0;
 }
 
@@ -51,7 +54,7 @@ static void __exit guestbook_exit(void) {
     }
     kfree(messages);
 
-    printk(KERN_INFO "Guestbook module unloaded.\n");
+    printk(KERN_INFO "Guestbook module for hotel \"%s\" unloaded.\n", hotel_name);
 }
 
 static int dev_open(struct inode *inodep, struct file *filep) {
