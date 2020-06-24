@@ -34,6 +34,16 @@ static char** messages;
 struct class *dev_class;
 struct device *dev;
 
+static char *devnode_helper(struct device *dev, umode_t *mode) {
+    if (!mode) {
+        return NULL;
+    }
+    if (dev->devt == MKDEV(major, 0)) {
+        *mode = 0666;
+    }
+    return NULL;
+}
+
 static int __init guestbook_init(void) {
     current_messages = 0;
     messages = (char**) kmalloc(sizeof(char*)*MAX_MESSAGES, GFP_KERNEL);
@@ -46,6 +56,7 @@ static int __init guestbook_init(void) {
     }    
 
     dev_class = class_create(THIS_MODULE, "guestbook_class");
+    dev_class->devnode = devnode_helper;
     dev = device_create(dev_class, NULL, MKDEV(major, 0), NULL, DEVICE_NAME);
     if (IS_ERR(dev)) {
         class_destroy(dev_class);
