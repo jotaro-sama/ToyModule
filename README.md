@@ -28,16 +28,16 @@ sudo rmmod guestbook
 
 The module now creates (and deletes) its own device file via C code, and we have a `tester.c` program to test the module, so the section below is not needed anymore. I will keep it there in case anyone finds it useful.
 
-~~Once it's running we want to create a node for the device in `/dev`:
-```
+~~Once it's running we want to create a node for the device in `/dev`:~~
+~~```
 cd /dev
 #          dev name c is for char device
 sudo mknod guestbook c <major_number> 0
-```
+```~~
 
 
-To see it in action do for example:
-```
+~~To see it in action do for example:~~
+~~```
 cat /dev/guestbook
 ```~~
 
